@@ -16,16 +16,20 @@ search `needle in haystack`, allow to search terms containg whitespace or other 
 
 search term on a given criteria, possible criteria are:
 
+- `archive`: number of story in the community
 - `c`: see `char`
+- `chapter`: number of chapters
+- `chapters`: see `chapter`
 - `char`: this character is in the story
 - `f`: see `fandom`
 - `fandom`: the particular show, movie, book, or other thing the fanfiction is about.
 - `fav`: number of favorites the story has received
 - `favs`: see `fav`
 - `follow`: number of user following the story
+- `followers`: number of followers to the community
 - `follows`: see `follow`
 - `genre`: genre of the story, can be `adventure`, `angst`, `crime`, `drama`, …
-- `is`: search characteristic of story, current possibilities: `crossover`, `complete`, `ongoing`
+- `is`: search characteristic of story, current possibilities: `crossover`, `complete`, `ongoing`. Will also try to fiter `yaoi`, `yuri` based on what is in description.
 - `lang`: language of the story (eg. lang:english)
 - `p`: see `published`
 - `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character
@@ -34,10 +38,12 @@ search term on a given criteria, possible criteria are:
 - `rated`: the rating of the story, can be `k`, `k+`, `t`, `m`
 - `review`: number of review the story has received
 - `reviews`: see `review`
+- `staff`: number of staff to the community
 - `u`: see `updated`
 - `updated`: time when last updated
-- `w`: see `words`
-- `words`: number of words in the story
+- `w`: see `word`
+- `word`: number of words in the story
+- `words`: see `word`
 
 ## `:>quantified` and `:<quantified`
 

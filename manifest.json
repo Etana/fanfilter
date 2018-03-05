@@ -2,12 +2,12 @@
   "manifest_version": 2,
   "name": "fanfilter",
   "description": "advanced filter on fanfiction.net",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "content_scripts": [
     {
       "matches": ["https://www.fanfiction.net/*", "https://www.fictionpress.com/*"],
       "js": ["e.js"]
     }
   ],
-  "icons": { "128": "i.png" }
+  "icons": {"128": "i.png"}
 }

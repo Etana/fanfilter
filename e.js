@@ -12,33 +12,33 @@ var anchor = $('.tab-content,.z-list')[0];
 var root = $('<div style="text-align: center"><input type="text" placeholder="enter filter such as needle -needle fav>20" style="width:80%"/></div>')[0];
 anchor.parentNode.insertBefore(root, anchor);
 var input = root.firstChild;
+var filter_name = location.pathname.slice(0,13) === '/communities/' ? 'fanfilter_community' : 'fanfilter_story';
 input.onchange = function () {
   treat_input(this.value);
-  localStorage.fanfilter = this.value;
+  localStorage[filter_name] = this.value;
 };
-if (localStorage.fanfilter && /\S/.test(localStorage.fanfilter)) {
-  input.value = localStorage.fanfilter;
+if (localStorage[filter_name] && /\S/.test(localStorage[filter_name])) {
+  input.value = localStorage[filter_name];
   input.onchange();
 }
 
 function treat_input (input) {
     var criteria_shorthand = {
         "c": "char",
+        "chapters": "chapter",
         "f": "fandom",
         "favs": "fav",
         "follows": "follow",
         "p": "published",
         "reviews": "review",
         "u": "updated",
-        "w": "words",
-    };
-    var treat_criteria = {
+        "w": "word",
+        "words": "word",
     };
     function treat_token (content, criteria, neg) {
         criteria = criteria || ":";
         var operator = criteria.slice(-1);
         criteria = criteria_shorthand[criteria.slice(0, -1)] || criteria.slice(0, -1);
-        (treat_criteria[criteria] || function () {})();
         var list = neg === "-" ? reject : accept;
         list[criteria] = list[criteria] || [];
         list[criteria].push(content);
@@ -91,6 +91,12 @@ function treat_input (input) {
         return comp(num, term);
     };
     var criteria_accepted = {
+        archive: function (term, el) {
+            return match_num('Archive', term, el);
+        },
+        chapter: function (term, el) {
+            return match_num('Chapters', term, el);
+        },
         char: function (term, el) {
             var end_content = $('.z-padtop2.xgray', el)[0].lastChild.nodeValue.slice(3);
             if (end_content.slice(-11) === " - Complete") {
@@ -108,6 +114,9 @@ function treat_input (input) {
         follow: function (term, el) {
             return match_num('Follows', term, el);
         },
+        followers: function (term, el) {
+            return match_num('Followers', term, el);
+        },
         genre: function (term, el) {
             var genre = $('.z-padtop2.xgray', el)[0].firstChild.nodeValue.match(/(?:^| - )Rated: \S+ - \S+ - (\S+) /)[1];
             return genre.toLowerCase().indexOf(term) !== -1;
@@ -122,6 +131,17 @@ function treat_input (input) {
             if (term === "ongoing") {
                 return !criteria_accepted.is('complete', el);
             }
+            if (term === "yaoi") {
+                var text = el.innerText.toLowerCase();
+                var match = text.match(/(\bnot?-?)?\s*(?:yaoi|slashs?\b|boyxboy|boy love)/);
+                return (!!match) && !match[1];
+            }
+            if (term === "yuri") {
+                var text = el.innerText.toLowerCase();
+                var match = text.match(/(\bnot?-?)?\s*(?:yuri|lesbian|femm?e?!?\s*-?slash|girl love|femalexfemale|girlxgirl|\bf\/f\b|\bofc\/ofc\b|girlxgirl)/);
+                return (!!match) && !match[1];
+            }
+            return true;
         },
         lang: function (term, el) {
             var lang = $('.z-padtop2.xgray', el)[0].firstChild.nodeValue.match(/(?:^| - )Rated: \S+ - (\S+) /)[1];
@@ -141,6 +161,9 @@ function treat_input (input) {
         },
         review: function (term, el) {
             return match_num('Reviews', term, el);
+        },
+        staff: function (term, el) {
+            return match_num('Staff', term, el);
         },
         updated: function (term, el) {
             var diff_days = (+new Date()/1000 - [...$('[data-xutime]', el)][0].getAttribute('data-xutime'))/86400;
