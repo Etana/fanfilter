@@ -98,7 +98,7 @@ function treat_input (input) {
             return match_num('Chapters', term, el);
         },
         char: function (term, el) {
-            var end_content = $('.z-padtop2.xgray', el)[0].lastChild.nodeValue.slice(3);
+            var end_content = ($('.z-padtop2.xgray', el)[0].lastChild.nodeValue || "").slice(3);
             if (end_content.slice(-11) === " - Complete") {
                 end_content = end_content.slice(0, -11);
             }
@@ -148,7 +148,7 @@ function treat_input (input) {
             return lang.toLowerCase().indexOf(term) !== -1;
         },
         pair: function (term, el) {
-            var end_content = $('.z-padtop2.xgray', el)[0].lastChild.nodeValue.slice(3).toLowerCase();
+            var end_content = ($('.z-padtop2.xgray', el)[0].lastChild.nodeValue||"").slice(3).toLowerCase();
             return (end_content.match(/\[([^\]]+)\]/g) || []).filter(pairing => term.split('/').filter(term => pairing.indexOf(term) === -1).length === 0).length !== 0;
         },
         published: function (term, el) {
@@ -169,7 +169,7 @@ function treat_input (input) {
             var diff_days = (+new Date()/1000 - [...$('[data-xutime]', el)][0].getAttribute('data-xutime'))/86400;
             return match_time(diff_days, term);
         },
-        words: function (term, el) {
+        word: function (term, el) {
             return match_num('Words', term, el);
         },
         '': function (term, el) {
@@ -198,10 +198,14 @@ function treat_input (input) {
         for (var list of [accept, reject]) {
             for (var criteria in list) {
                 for (var term of list[criteria]) {
-                    if ((criteria_accepted[criteria] || function () { return list === accept })(term, e) !== (list === accept)) {
-                        rejecting[0].push(e);
-                        rejecting[1].add((list === accept ? '': '-') + (criteria ? criteria + ':' : '') + term);
-                        return;
+                    try {
+                        if ((criteria_accepted[criteria] || function () { return list === accept })(term, e) !== (list === accept)) {
+                            rejecting[0].push(e);
+                            rejecting[1].add((list === accept ? '': '-') + (criteria ? criteria + ':' : '') + term);
+                            return;
+                        }
+                    } catch (err) {
+                        console.log('[fanfilter]: error applying '+criteria+':'+term+' for '+e.firstElementChild.getAttribute('href')+' on '+location.href+' ('+err+')');
                     }
                 }
             }
