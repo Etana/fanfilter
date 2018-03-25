@@ -35,25 +35,24 @@ function treat_input (input) {
         "w": "word",
         "words": "word",
     };
-    function treat_token (content, criteria, neg) {
+    function treat_token (content, criteria, op) {
         criteria = criteria || ":";
         var operator = criteria.slice(-1);
         criteria = criteria_shorthand[criteria.slice(0, -1)] || criteria.slice(0, -1);
-        var list = neg === "-" ? reject : accept;
-        list[criteria] = list[criteria] || [];
-        list[criteria].push(content);
+        crit[op] = crit[op] || {};
+        crit[op][criteria] = crit[op][criteria] || [];
+        crit[op][criteria].push(content);
     }
 
-    var accept = {};
-    var reject = {};
+    var crit = {};
 
-    input = input.toLowerCase().replace(/(?:^|\s)(-)?([a-z]+:)?"([^"]*)"/ig, function(_, neg, criteria, content){
-        treat_token(content, criteria, neg);
+    input = input.toLowerCase().replace(/(?:^|\s)([~-])?([a-z]+:)?"([^"]*)"/ig, function(_, op, criteria, content){
+        treat_token(content, criteria, op);
         return ' ';
     });
 
-    input.replace(/(?:^|\s)(-)?([a-z]+:)?(\S+)/ig, function(_, neg, criteria, content){
-        treat_token(content, criteria, neg);
+    input.replace(/(?:^|\s)([~-])?([a-z]+:)?(\S+)/ig, function(_, op, criteria, content){
+        treat_token(content, criteria, op);
     });
     /*
      * TODO: optimize by making an expected search
@@ -195,20 +194,40 @@ function treat_input (input) {
     $('.z-list.reject').forEach(e => e.remove())
     $('.z-list').forEach(e => e.style.display = '');
     $('.z-list').forEach(function (e) {
-        for (var list of [accept, reject]) {
-            for (var criteria in list) {
-                for (var term of list[criteria]) {
+        var result_false = false;
+        op_loop:
+        for (var op in crit) {
+            for (var criteria in crit[op]) {
+                for (var term of crit[op][criteria]) {
                     try {
-                        if ((criteria_accepted[criteria] || function () { return list === accept })(term, e) !== (list === accept)) {
-                            rejecting[0].push(e);
-                            rejecting[1].add((list === accept ? '': '-') + (criteria ? criteria + ':' : '') + term);
-                            return;
+                        var result = (criteria_accepted[criteria] || function () { return true; })(term, e);
+                        switch (op) {
+                            case "~":
+                                // result is ok if at least one ~ token is true
+                                if (result) {
+                                    continue op_loop;
+                                }
+                                result_false = result_false || new Set();
+                                result_false.add(op + (criteria ? criteria + ':' : '') + term);
+                                break;
+                            case "-":
+                                result = !result;
+                            default:
+                                if (!result) {
+                                    result_false = result_false || new Set();
+                                    result_false.add(op + (criteria ? criteria + ':' : '') + term);
+                                }
                         }
                     } catch (err) {
                         console.log('[fanfilter]: error applying '+criteria+':'+term+' for '+e.firstElementChild.getAttribute('href')+' on '+location.href+' ('+err+')');
                     }
                 }
             }
+        }
+        if (result_false) {
+            rejecting[0].push(e);
+            rejecting[1] = new Set([...rejecting[1], ...result_false]);
+            return;
         }
         try_reject(rejecting);
     });

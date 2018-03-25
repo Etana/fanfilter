@@ -8,6 +8,10 @@ only show result containing `needle`
 
 only show result not containing `needle` (has priority over positive query terms)
 
+## `~needle`
+
+only show results matching at least one of the several ~needle tokens (eg `~a ~b` will search content contening `a` or `b`)
+
 ## `"needle in haystack"`
 
 search `needle in haystack`, allow to search terms containg whitespace or other search operator (-/:) without conflict
