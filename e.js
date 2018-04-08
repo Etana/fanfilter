@@ -92,7 +92,7 @@ function treat_input (input) {
         if (Object.keys(new_search).length) {
             if (filter_name === 'fanfilter_community') {
                 if (new_search.srt && location.pathname.endsWith('/') && location.pathname.split('/').length === 5) {
-                    location.pathname = location.pathname + new_search.srt + '/1/';
+                    location.pathname = location.pathname + (location.pathname.endsWith('/0/') ? '' : '0/' )+ new_search.srt + '/1/';
                     return;
                 }
             } else {
