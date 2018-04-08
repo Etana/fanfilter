@@ -30,7 +30,9 @@ function treat_input (input) {
         "favs": "fav",
         "follows": "follow",
         "p": "published",
+        "r": "rated",
         "reviews": "review",
+        "s": "sort",
         "u": "updated",
         "w": "word",
         "words": "word",
@@ -39,24 +41,74 @@ function treat_input (input) {
         criteria = criteria || ":";
         var operator = criteria.slice(-1);
         criteria = criteria_shorthand[criteria.slice(0, -1)] || criteria.slice(0, -1);
-        crit[op] = crit[op] || {};
         crit[op][criteria] = crit[op][criteria] || [];
         crit[op][criteria].push(content);
     }
+    if (filter_name === 'fanfilter_community') {
+        var sortingToId = {
+            'staff': 1,
+            'archive': 2,
+            'followers': 3,
+            'created': 4,
+            'random': 99,
+        };
+    } else {
+        var sortingToId = {
+            'updated': 1,
+            'published': 2,
+            'review': 3,
+            'fav': 4,
+            'follow': 5,
+        };
+        if (location.pathname.startsWith('/community/')) {
+            sortingToId.archived = 0;
 
-    var crit = {};
+        }
+    }
+
+    var crit = {'':{}, '-': {}, '~': {}};
 
     input = input.toLowerCase().replace(/(?:^|\s)([~-])?([a-z]+:)?"([^"]*)"/ig, function(_, op, criteria, content){
-        treat_token(content, criteria, op);
+        treat_token(content, criteria, op || '');
         return ' ';
     });
 
     input.replace(/(?:^|\s)([~-])?([a-z]+:)?(\S+)/ig, function(_, op, criteria, content){
-        treat_token(content, criteria, op);
+        treat_token(content, criteria, op || '');
     });
-    /*
-     * TODO: optimize by making an expected search
-    }*/
+    // if we have not done any search, apply search for rated:all or sort:* options
+    if (location.search === "") {
+        new_search = {};
+        if (crit[''].rated && crit[''].rated.includes('all') && $('select[name="censorid"] option[value="103"][selected],select[name="censorid"] option[value="3"][selected]').length) {
+            new_search.r = 10;
+        }
+        if (crit[''].sort) {
+            var sorting = crit[''].sort.slice(-1);
+            var sortingId = sortingToId[criteria_shorthand[sorting] || sorting];
+            if (sortingId !== undefined && ($('select[name="sortid"], select[name="s"]')[0]||{}).value != sortingId) {
+                new_search.srt = sortingId;
+            }
+        }
+        if (Object.keys(new_search).length) {
+            if (filter_name === 'fanfilter_community') {
+                if (new_search.srt && location.pathname.endsWith('/') && location.pathname.split('/').length === 5) {
+                    location.pathname = location.pathname + new_search.srt + '/1/';
+                    return;
+                }
+            } else {
+                if (location.pathname.startsWith('/community/')) {
+                    if (location.pathname.endsWith('/') && location.pathname.split('/').length === 5) {
+                        location.pathname = location.pathname + (new_search.r && 99 || 3) + '/'+(new_search.srt || 0)+'/1/0/0/0/0/';
+                        return;
+                    }
+                } else {
+                    location.search = "?"+ Object.keys(new_search).map(k => k+'='+new_search[k]).join('&');
+                    return;
+                }
+            }
+        }
+    }
+    /* TODO: maybe optimize results per page by making an real search */
     var match_time = function (diff_days, term) {
         var factor = {
             w: 7,
@@ -155,6 +207,9 @@ function treat_input (input) {
             return match_time(diff_days, term);
         },
         rated: function (term, el) {
+            if (term === "all") {
+                return true;
+            }
             var rate = $('.z-padtop2.xgray', el)[0].firstChild.nodeValue.match(/(?:^| - )Rated: ([MKT]|K\+) -/)[1];
             return rate.toLowerCase() === term;
         },

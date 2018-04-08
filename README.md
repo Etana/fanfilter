@@ -39,9 +39,11 @@ search term on a given criteria, possible criteria are:
 - `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character
 - `published`: time when first published
 - `r`: see `rated`
-- `rated`: the rating of the story, can be `k`, `k+`, `t`, `m`
+- `rated`: the rating of the story, can be `k`, `k+`, `t`, `m`, `all` (if `all` have this rating in search by default)
 - `review`: number of review the story has received
 - `reviews`: see `review`
+- `s`: see `sort`
+- `sort`: default sort by the given criteria, for story: `updated`, `published`, `review`, `fav`, `follow`, `archived`; for community: `staff`, `archive`, `followers`, `created`, `random`
 - `staff`: number of staff to the community
 - `u`: see `updated`
 - `updated`: time when last updated
