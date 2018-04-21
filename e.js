@@ -249,7 +249,8 @@ function treat_input (input) {
     $('.z-list.reject').forEach(e => e.remove())
     $('.z-list').forEach(e => e.style.display = '');
     $('.z-list').forEach(function (e) {
-        var result_false = false;
+        var crit_nomatch = new Set();
+        var any_nomatch = new Set();
         op_loop:
         for (var op in crit) {
             for (var criteria in crit[op]) {
@@ -260,17 +261,16 @@ function treat_input (input) {
                             case "~":
                                 // result is ok if at least one ~ token is true
                                 if (result) {
+                                    any_nomatch.clear();
                                     continue op_loop;
                                 }
-                                result_false = result_false || new Set();
-                                result_false.add(op + (criteria ? criteria + ':' : '') + term);
+                                any_nomatch.add(op + (criteria ? criteria + ':' : '') + term);
                                 break;
                             case "-":
                                 result = !result;
                             default:
                                 if (!result) {
-                                    result_false = result_false || new Set();
-                                    result_false.add(op + (criteria ? criteria + ':' : '') + term);
+                                    crit_nomatch.add(op + (criteria ? criteria + ':' : '') + term);
                                 }
                         }
                     } catch (err) {
@@ -279,9 +279,9 @@ function treat_input (input) {
                 }
             }
         }
-        if (result_false) {
+        if (crit_nomatch.size || any_nomatch.size) {
             rejecting[0].push(e);
-            rejecting[1] = new Set([...rejecting[1], ...result_false]);
+            rejecting[1] = new Set([...rejecting[1], ...crit_nomatch, ...any_nomatch]);
             return;
         }
         try_reject(rejecting);
