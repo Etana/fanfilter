@@ -77,7 +77,7 @@ function treat_input (input) {
         treat_token(content, criteria, op || '');
     });
     // if we have not done any search, apply search for rated:all or sort:* options
-    if (location.search === "") {
+    if (location.search === "" && $('select[name="sortid"], select[name="s"]').length) {
         new_search = {};
         if (crit[''].rated && crit[''].rated.includes('all') && $('select[name="censorid"] option[value="103"][selected],select[name="censorid"] option[value="3"][selected]').length) {
             new_search.r = 10;
