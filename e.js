@@ -184,7 +184,7 @@ function treat_input (input) {
             }
             if (term === "yaoi") {
                 var text = el.innerText.toLowerCase();
-                var match = text.match(/(\bnot?-?)?\s*(?:yaoi|slashs?\b|boyxboy|boy love)/);
+                var match = text.match(/(\bnot?-?|femm?e?s?-?)?\s*(?:yaoi|slashs?\b|boyxboy|boy love)/);
                 return (!!match) && !match[1];
             }
             if (term === "yuri") {
