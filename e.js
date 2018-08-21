@@ -217,7 +217,11 @@ function treat_input (input) {
                     }
                 }
             }
-            return (end_content.match(/\[([^\]]+)\]/g) || []).filter(pairing => term.split('/').filter(term => pairing.indexOf(term) === -1).length === 0).length !== 0;
+            return (end_content.match(/\[([^\]]+)\]/g) || []).filter(
+                pairing => term.split('/').filter(
+                    term => term.slice(0, 1) === '-' ? pairing.indexOf(term.slice(1)) !== -1 : pairing.indexOf(term) === -1
+                ).length === 0
+            ).length !== 0;
         },
         published: function (term, el) {
             var diff_days = (+new Date()/1000 - [...$('[data-xutime]', el)].slice(-1)[0].getAttribute('data-xutime'))/86400;

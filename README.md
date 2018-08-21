@@ -36,7 +36,7 @@ search term on a given criteria, possible criteria are:
 - `is`: search characteristic of story, current possibilities: `crossover`, `complete`, `ongoing`. Will also try to fiter `yaoi`, `yuri` based on what is in description.
 - `lang`: language of the story (eg. lang:english)
 - `p`: see `published`
-- `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character
+- `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character, - in front of a character so he is not in the pairing
 - `published`: time when first published
 - `r`: see `rated`
 - `rated`: the rating of the story, can be `k`, `k+`, `t`, `m`, `all` (if `all` have this rating in search by default)
