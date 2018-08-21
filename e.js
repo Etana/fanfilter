@@ -200,6 +200,23 @@ function treat_input (input) {
         },
         pair: function (term, el) {
             var end_content = ($('.z-padtop2.xgray', el)[0].lastChild.nodeValue||"").slice(3).toLowerCase();
+            if (/^[<>]?[0-9]+$/.test(term)) {
+                var comp = (val, op) => val === op;
+                if (term[0] === '<') {
+                    term = term.slice(1);
+                    comp = (val, op) => val < op;
+                }
+                if (term[0] === '>') {
+                    term = term.slice(1);
+                    comp = (val, op) => val > op;
+                }
+                var pairs = end_content.match(/\[([^\]]+)\]/g) || []
+                for (var pair in pairs) {
+                    if (comp(pairs[pair].split(', ').length, term)) {
+                        return true;
+                    }
+                }
+            }
             return (end_content.match(/\[([^\]]+)\]/g) || []).filter(pairing => term.split('/').filter(term => pairing.indexOf(term) === -1).length === 0).length !== 0;
         },
         published: function (term, el) {
