@@ -31,6 +31,8 @@ function treat_input (input) {
         "follows": "follow",
         "p": "published",
         "r": "rated",
+        "rate": "rated",
+        "rating": "rated",
         "reviews": "review",
         "s": "sort",
         "u": "updated",

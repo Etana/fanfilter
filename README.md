@@ -36,10 +36,12 @@ search term on a given criteria, possible criteria are:
 - `is`: search characteristic of story, current possibilities: `crossover`, `complete`, `ongoing`. Will also try to fiter `yaoi`, `yuri` based on what is in description.
 - `lang`: language of the story (eg. lang:english)
 - `p`: see `published`
-- `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character, - in front of a character so he is not in the pairing
+- `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character, - in front of a character so he is not in the pairing.
 - `published`: time when first published
 - `r`: see `rated`
+- `rate`: see `rated`
 - `rated`: the rating of the story, can be `k`, `k+`, `t`, `m`, `all` (if `all` have this rating in search by default)
+- `rating`: see `rated`
 - `review`: number of review the story has received
 - `reviews`: see `review`
 - `s`: see `sort`
@@ -53,11 +55,12 @@ search term on a given criteria, possible criteria are:
 
 ## `:>quantified` and `:<quantified`
 
-for some criterias (`fav`, `follow`, `published`, `review`, `updated`, `words`) the term can be quantified more specifically, for example:
+for some criterias (`chapter`, `fav`, `follow`, `pair`, `published`, `review`, `updated`, `words`) the term can be quantified more specifically, for example:
 
 - `updated:<3month` will search stories updated since 3 months ago
 - `fav:>4000` will search stories with more than 4000 favorites
 - `words:>4242 words:<8585` will search for stories between 4243 and 8584 words
+- `pair:3` search pairing with 3 characters
 
 for date type (published and updated), a quantifier can be used at the end:
 
