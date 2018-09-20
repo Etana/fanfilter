@@ -17,6 +17,15 @@ input.onchange = function () {
   treat_input(this.value);
   localStorage[filter_name] = this.value;
 };
+
+// regexes for pairing searching in summary
+var pair_regexes = [];
+for (var r of [
+    ['(?: [xX] |\/)', '\\p{L}+'],
+    ['(?:X|)', '\\p{Lu}\\p{Ll}+'],
+    ['x', '\\p{Lu}+\\p{Ll}*'],
+]) pair_regexes.push(new RegExp('\\b(' + r[1] + ')('+r[0]+')('+r[1]+'(?:\\2'+r[1]+')*)\\b', 'gu'));
+
 if (localStorage[filter_name] && /\S/.test(localStorage[filter_name])) {
   input.value = localStorage[filter_name];
   input.onchange();
@@ -201,7 +210,29 @@ function treat_input (input) {
             return lang.toLowerCase().indexOf(term) !== -1;
         },
         pair: function (term, el) {
-            var end_content = ($('.z-padtop2.xgray', el)[0].lastChild.nodeValue||"").slice(3).toLowerCase();
+            var summary_pairs = $('.summary_pairs', el)[0];
+            if (!summary_pairs) {
+                var summary = $('div', el)[0].firstChild.nodeValue || "";
+                var pairs = '';
+                for(var r of pair_regexes) {
+                    summary.replace(r, function (match, first, sep, ending) {
+                        var orig_match;
+                        do {
+                            orig_match = match;
+                            match = match.replace(r, '$1, $3');
+                        }
+                        while  (orig_match !== match);
+                        pairs += '[' + match + ']';
+                    });
+                }
+                var summary_pairs = document.createElement('span');
+                summary_pairs.innerText = pairs;
+                summary_pairs.style.display = 'none';
+                summary_pairs.className = 'summary_pairs';
+                el.appendChild(summary_pairs);
+            }
+            summary_pairs = summary_pairs.innerText;
+            var end_content = ($('.z-padtop2.xgray', el)[0].lastChild.nodeValue + summary_pairs||summary_pairs).slice(3).toLowerCase();
             if (/^[<>]?[0-9]+$/.test(term)) {
                 var comp = (val, op) => val === op;
                 if (term[0] === '<') {

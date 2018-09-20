@@ -36,7 +36,7 @@ search term on a given criteria, possible criteria are:
 - `is`: search characteristic of story, current possibilities: `crossover`, `complete`, `ongoing`. Will also try to fiter `yaoi`, `yuri` based on what is in description.
 - `lang`: language of the story (eg. lang:english)
 - `p`: see `published`
-- `pair`: this pairing is in the story, each searched character of a pairing must be separated by a / character, - in front of a character so he is not in the pairing.
+- `pair`: this pairing is in the story, see [`pair:charA/charB`](#paircharacharb)
 - `published`: time when first published
 - `r`: see `rated`
 - `rate`: see `rated`
@@ -70,3 +70,11 @@ for date type (published and updated), a quantifier can be used at the end:
 - `d`, `day`, `days`: will be a number of day
 
 with only a number, the default meaning is a number of days (eg. p:>200days is the same that p:>200)
+
+## `pair:charA/charB`
+
+value is split over `/` and filter will match if all part are matching a pairing
+
+a part beginning with `-` will only match if it is not inside the pairing, eg. `pair:hermione/-draco` will only match if there is a pairing with `hermione` and without `draco`
+
+pairings are also searched in the summary, so all these `HarryXHermione`, `Harry x Hermione`, `Harry/Hermione`, `HarryHermione` would match `pair:harry/hermione`
